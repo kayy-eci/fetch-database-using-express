@@ -7,6 +7,7 @@ const app: Express = express();
 const port = 8000;
 
 app.use(cors());
+app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
@@ -19,6 +20,12 @@ app.get("/api/users", async (req: Request, res: Response) => {
         message: "Berhasil fetch users!",
         data : users
     })
+})
+
+app.post("/api/login", (req: Request, res: Response) => {
+  res.status(200).json({
+    message: "Berhasil login"
+  })
 })
 
 app.get("/api/movies", async (req: Request, res: Response) => {
