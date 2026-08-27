@@ -1,6 +1,7 @@
 import express, { type Express, type Request, type Response } from 'express';
 import cors from "cors";
 import pool from './db/index..ts';
+import type { ResultSetHeader } from "mysql2/promise";
 
 
 const app: Express = express();
@@ -37,6 +38,66 @@ app.get("/api/movies", async (req: Request, res: Response) => {
   })
 })
 
+
+app.post("/api/users", async (req: Request, res: Response) => {
+  try {
+    const { username, email, password} = req.body;
+
+    const [users] = await pool.query<ResultSetHeader>(`INSERT INTO users (username, email, password) VALUES(?, ?, ?)`, [username, email, password]);
+
+    res.status(201).json({
+      message: "Users created succesfully",
+      data: {
+        usersId: users.insertId,
+        username,
+      }
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Failed to create users"
+    })
+  }
+});
+
+app.post("/api/movies", async (req: Request, res: Response) => {
+  try {
+    const { title, year, rating, duration, genres} = req.body;
+
+    const [movies] = await pool.query<ResultSetHeader>(`INSERT INTO movies (title, year, rating, duration, genres) VALUES(?, ?, ?, ?, ?)`, 
+      [title, year, rating, duration, genres]
+    )
+
+    res.status(201).json({
+      message: "Movie was added to the list!",
+      data: {
+        moviesId: movies.insertId,
+        title,
+        year,
+        rating,
+        duration,
+        genres
+      }
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Failed to add movie"
+    })
+  }
+});
+
+
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+
+	// title varchar(100),
+  //   year YEAR ,
+  //   rating int,
+  //   duration int, 
+  //   genres varchar(100)
