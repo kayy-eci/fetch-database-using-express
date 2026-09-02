@@ -3,6 +3,7 @@ import cors from "cors";
 import pool from './db/index..ts';
 import type { ResultSetHeader } from "mysql2/promise";
 import { dataUsers, dataMovies } from './db/dataschema.ts';
+import { number } from 'zod';
 
 const app: Express = express();
 const port = 8000;
@@ -89,6 +90,96 @@ app.post("/api/movies", async (req: Request, res: Response) => {
   }
 });
 
+
+app.put("/api/movies", async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    const validasiData = dataMovies.parse(req.body);
+
+    const {title, year, rating, duration, genres} = validasiData;
+
+    const [movies] = await pool.query<ResultSetHeader>(
+      "UPDATE movies SET title = ?, year = ?, rating = ?, duration = ?, genres = ? WHERE id = ?",
+      [id, title, year, rating, duration, genres]
+    );
+
+    const updateMovies = movies as any;
+
+    if (updateMovies.affectedRows == 0) {
+      res.status(404).json({
+        message : "error"
+      });
+      return;
+    }
+
+    res.status(200).json({
+      message: "Data movies berhasil diupdate"
+  });
+  } catch (error){
+    res.status(400).json({
+      message: "Data movies tidak valid"
+    });
+  };
+});
+
+app.put("/api/users",  async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    const validasiData = dataUsers.parse(req.body);
+
+    const {username, email, password} = validasiData;
+
+    const [users]= await pool.query("UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?", [id, username, email, password]);
+
+    const updateUsers = users as any;
+
+    if (updateUsers.affectedRows == 0){
+      res.status(404).json({
+        message: "error"
+      });
+
+      return
+    }
+    res.status(200).json({
+      message: "data user berhasil di update"
+    })
+  } catch (error) {
+    res.status(400).json({
+      message: "data user tidak valid"
+    })
+  }
+})
+
+app.delete("/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const [users] = await pool.query(
+      "DELETE FROM users WHERE id = ?",
+      [id]
+    );
+
+    const deleteUsers = users as any;
+
+    if (deleteUsers.affectedRows === 0) {
+      res.status(404).json({
+        message: "user tidak ditemukan",
+      });
+
+      return;
+    }
+
+    res.status(200).json({
+      message: "user berhasil dihapus",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal menghapus user",
+    });
+  }
+});
 
 
 app.listen(port, () => {
