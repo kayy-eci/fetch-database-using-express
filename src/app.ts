@@ -10,10 +10,6 @@ const port = 8000;
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
-
 app.get("/api/users", async (req: Request, res: Response) => {
     const [users] = await pool.query("select * from users;")
 
