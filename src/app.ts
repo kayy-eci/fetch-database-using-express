@@ -152,7 +152,7 @@ app.put("/api/users",  async (req: Request, res: Response) => {
   }
 })
 
-app.delete("/:id", async (req, res) => {
+app.delete("/api/users/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
 
@@ -181,6 +181,34 @@ app.delete("/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/movies/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const [movies] = await pool.query(
+      "DELETE FROM movies WHERE id = ?",
+      [id]
+    );
+
+    const deleteMovies = movies as any;
+
+    if (deleteMovies.affectedRows === 0) {
+      res.status(404).json({
+        message: "movie tidak ditemukan",
+      });
+
+      return;
+    }
+
+    res.status(200).json({
+      message: "movie berhasil dihapus",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "movie menghapus user",
+    });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
