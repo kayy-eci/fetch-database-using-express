@@ -61,7 +61,9 @@ app.post("/api/users", async (req: Request, res: Response) => {
 
 app.post("/api/movies", async (req: Request, res: Response) => {
   try {
-    const { title, year, rating, duration, genres} = req.body;
+    const validasiData = dataMovies.parse(req.body)
+
+    const { title, year, rating, duration, genres} = validasiData;
 
     const [movies] = await pool.query<ResultSetHeader>(`INSERT INTO movies (title, year, rating, duration, genres) VALUES(?, ?, ?, ?, ?)`, 
       [title, year, rating, duration, genres]
