@@ -2,7 +2,7 @@ import express, { type Express, type Request, type Response } from 'express';
 import cors from "cors";
 import pool from './db/index..ts';
 import type { ResultSetHeader } from "mysql2/promise";
-
+import { dataUsers, dataMovies } from './db/dataschema.ts';
 
 const app: Express = express();
 const port = 8000;
@@ -22,7 +22,7 @@ app.get("/api/users", async (req: Request, res: Response) => {
 app.post("/api/login", (req: Request, res: Response) => {
   res.status(200).json({
     message: "Berhasil login"
-  })
+  });
 })
 
 app.get("/api/movies", async (req: Request, res: Response) => {
@@ -37,7 +37,9 @@ app.get("/api/movies", async (req: Request, res: Response) => {
 
 app.post("/api/users", async (req: Request, res: Response) => {
   try {
-    const { username, email, password} = req.body;
+    const validasiData  = dataUsers.parse(req.body);
+
+    const { username, email, password} = validasiData;
 
     const [users] = await pool.query<ResultSetHeader>(`INSERT INTO users (username, email, password) VALUES(?, ?, ?)`, [username, email, password]);
 
