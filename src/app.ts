@@ -91,7 +91,7 @@ app.post("/api/movies", async (req: Request, res: Response) => {
 });
 
 
-app.put("/api/movies", async (req: Request, res: Response) => {
+app.put("/api/movies/:id", async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
@@ -123,7 +123,7 @@ app.put("/api/movies", async (req: Request, res: Response) => {
   };
 });
 
-app.put("/api/users",  async (req: Request, res: Response) => {
+app.put("/api/users/:id",  async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
 
